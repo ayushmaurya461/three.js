@@ -16,15 +16,26 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
+// light
+
+const light = new THREE.PointLight("#ffffff", 1);
+light.position.set(0, 0, 3);
+const helper = new THREE.PointLightHelper(light, 0.1);
+scene.add(helper); 
+scene.add(light);
+
 /**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const matcapTexture = textureLoader.load("textures/matcaps/4.png");
+// const matcapTexture = textureLoader.load("textures/matcaps/7.png");
+const material = new THREE.MeshStandardMaterial();
+material.metalness = 0.7;
+material.roughness = 0.2;
 
 const fontLoader = new FontLoader();
 fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
-  const textGeomerty = new TextGeometry("Ayush Maurya", {
+  const textGeomerty = new TextGeometry("Ayush \n Loves \n Aakansha", {
     font: font,
     size: 0.5,
     height: 0.2,
@@ -35,10 +46,7 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
     bevelOffset: 0,
     bevelSegments: 4,
   });
-  const text = new THREE.Mesh(
-    textGeomerty,
-    new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
-  );
+  const text = new THREE.Mesh(textGeomerty, material);
   //   textGeomerty.computeBoundingBox();
   //   const { max } = textGeomerty.boundingBox;
   //   textGeomerty.translate(-max.x * 0.5, -max.y * 0.5, -max.z * 0.5);
@@ -50,13 +58,12 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
  * Object
  */
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 500; i++) {
   const cube = new THREE.Mesh(geometry, material);
   cube.position.set(
-    (Math.random() - 0.5) * 10,
-    (Math.random() - 0.5) * 10,
-    (Math.random() - 0.5) * 10
+    (Math.random() - 0.5) * 20,
+    (Math.random() - 0.5) * 20,
+    (Math.random() - 0.5) * 20
   );
   const randomValue = Math.random();
   cube.scale.x = randomValue;
@@ -107,6 +114,13 @@ scene.add(camera);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+
+gui.add(light, "intensity").min(0).max(1).step(0.01);
+gui.add(light.position, "x").min(-20).max(20).step(0.01);
+gui.add(light.position, "y").min(-5).max(20).step(0.01);
+gui.add(light.position, "z").min(-5).max(20).step(0.01);
+gui.add(material, "metalness").min(0).max(1).step(0.01);
+
 
 /**
  * Renderer
